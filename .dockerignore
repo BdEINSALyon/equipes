@@ -1,0 +1,4 @@
+*.mo
+.venv-resa
+.git
+.idea

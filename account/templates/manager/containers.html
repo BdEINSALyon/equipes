@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Containers</h1>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th class="col-md-8">Nom</th>
+            <th class="col-md-2">Statut</th>
+            <th class="col-md-2"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for container in containers %}
+            <tr>
+                <td><a href="{% url 'manager_container' id=container.id %}">{{ container.name }}</a></td>
+                <td>
+                    {% include 'manager/utils/status_badge.html' %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

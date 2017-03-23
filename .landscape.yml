@@ -1,0 +1,19 @@
+doc-warnings: false
+test-warnings: false
+strictness: medium
+#max-line-length: 120
+uses:
+  - django
+autodetect: true
+requirements:
+  - requirements.txt
+ignore-paths:
+  - static
+ignore-patterns:
+  - (^|/)doc(/|$)
+  - (^|/)migrations(/|$)
+  - (^|/)static(/|$)
+  - ^manage.py$
+  - ^resa/wsgi.py$
+python-targets:
+  - 3

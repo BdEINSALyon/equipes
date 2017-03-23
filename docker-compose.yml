@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-cdpimport
+    ports:
+      - "80:8000"
+    depends_on:
+      - app
+    volumes:
+      - ./docker/config/nginx:/etc/nginx/conf.d
+      - ./staticfiles:/app/staticfiles
+
+  app:
+    build: .
+    container_name: cdpimport
+
+    # As migrate and collectstatic need configuration from this file, we can't extract them to Dockerfile
+    command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn cdpimport.wsgi -b 0.0.0.0:8000"
+
+    environment:
+      - DJANGO_ENV=prod
+      - DEBUG=False
+      - SSL=False
+      - DJANGO_LOCALE=fr-fr
+      - DJANGO_TIMEZONE=Europe/Paris
+      - DATABASE_URL=postgres://postgresql:postgresql@db:5432/cdpimport
+
+    depends_on:
+      - db
+    expose:
+      - "8000"
+    volumes:
+      - ./staticfiles:/app/staticfiles
+
+  db:
+    image: postgres:latest
+    container_name: postgres-cdpimport
+    environment:
+      - POSTGRES_USER=postgresql
+      - POSTGRES_DB=cdpimport

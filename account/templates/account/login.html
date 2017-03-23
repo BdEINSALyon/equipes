@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style_head %}
+    <link href="{% static 'account/login.css' %}" type="text/css" rel="stylesheet"/>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+
+        <div class="offset-md-4 col-md-4">
+            <div class="text-center">
+                <img src="{% static 'img/bde.png' %}" class="logo-bde-big">
+            </div>
+            <div class="card text-center mt-4">
+                <div class="card-header">
+                    <h4>Connexion requise</h4>
+                </div>
+                <div class="card-block">
+                    <p class="card-text">Vous devez vous identifiez pour continuer sur ce site</p>
+                    <a class="btn btn-primary" href="{% url 'oauth_login' provider='microsoft' %}">Connexion avec Office
+                        365</a>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- /container -->
+{% endblock %}

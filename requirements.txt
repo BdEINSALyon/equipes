@@ -1,0 +1,15 @@
+appdirs==1.4.0
+dj-database-url==0.4.2
+Django==1.10.6
+django-autofixture==0.12.1
+django-bootstrap3-datetimepicker-2==2.4.2
+django-crispy-forms==1.6.1
+django-dotenv==1.4.1
+gunicorn==19.7.0
+packaging==16.8
+psycopg2==2.7.1
+pyparsing==2.2.0
+python-dateutil==2.6.0
+requests==2.13.0
+six==1.10.0
+whitenoise==3.3.0

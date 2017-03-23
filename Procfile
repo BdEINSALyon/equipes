@@ -1,0 +1,1 @@
+web: bash bash/run-prod.sh

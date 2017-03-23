@@ -1,0 +1,38 @@
+input.dropdown-form {
+    margin-bottom: 1ex;
+}
+
+#logo img {
+    height: 100%;
+}
+
+#logo {
+    padding: 1ex 1em;
+}
+
+.inventory {
+    padding-bottom: 6rem;
+}
+
+.pagebreak {
+    page-break-before: always;
+}
+
+.signatures {
+    padding-bottom: 6rem;
+}
+
+.signatures-bde {
+    padding-bottom: 2rem;
+}
+
+.limit-height {
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+@media print {
+    h1, h2, .row {
+        page-break-inside: avoid;
+    }
+}
