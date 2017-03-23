@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'permissions',
     'crispy_forms',
     'autofixture',
+    'o365import',
     'bootstrap3_datetime',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -163,7 +164,7 @@ LANGUAGE_CODE = os.getenv('DJANGO_LOCALE', 'fr-fr')
 
 TIME_ZONE = os.getenv('DJANGO_TIMEZONE', 'Europe/Paris')
 
-USE_I18N = True
+USE_I18N = False
 
 USE_L10N = True
 
@@ -195,8 +196,8 @@ MEDIA_URL = '/uploads/'
 
 LOGIN_URL = reverse_lazy('oauth_login', kwargs={'provider': 'microsoft'})
 LOGOUT_URL = 'logout'
-LOGIN_REDIRECT_URL = 'bookings:home'
-LOGOUT_REDIRECT_URL = 'bookings:home'
+LOGIN_REDIRECT_URL = 'root'
+LOGOUT_REDIRECT_URL = 'root'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 

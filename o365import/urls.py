@@ -1,4 +1,4 @@
-"""resa URL Configuration
+"""import URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.10/topics/http/urls/
@@ -16,8 +16,8 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+from o365import import views
+
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'', include('account.urls')),
-    url(r'', include('o365import.urls')),
+    url(r'^home$', views.HomeView.as_view(), name='root'),
 ]
