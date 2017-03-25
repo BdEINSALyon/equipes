@@ -1,4 +1,5 @@
 *.mo
 .venv-resa
+.venv
 .git
 .idea

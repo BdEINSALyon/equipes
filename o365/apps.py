@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class ImportConfig(AppConfig):
-    name = 'o365import'
+    name = 'o365'

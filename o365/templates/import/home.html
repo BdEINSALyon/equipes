@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Equipes</h1>
+            <div class="list-group">
+                {% for team in teams %}
+                    <a href="{% url 'o365:team' team.id %}"
+                       class="list-group-item list-group-item-action justify-content-between">
+                        {{ team.displayName }}
+                        {% if team.mail %}
+                            <span class="badge badge-default badge-pill">{{ team.mail }}</span>
+                        {% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

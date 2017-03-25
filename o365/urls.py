@@ -16,8 +16,11 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from o365import import views
+from o365 import views
 
+app_name = 'o365'
 urlpatterns = [
-    url(r'^home$', views.HomeView.as_view(), name='root'),
+    url(r'^teams$', views.TeamsView.as_view(), name='teams'),
+    url(r'^team/(?P<gid>[-\w]+)$', views.TeamView.as_view(), name='team'),
+    url(r'^register$', views.RegisterUsers.as_view(), name='register'),
 ]

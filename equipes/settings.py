@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     'permissions',
     'crispy_forms',
     'autofixture',
-    'o365import',
+    'o365',
     'bootstrap3_datetime',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -88,7 +88,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'cdpimport.urls'
+ROOT_URLCONF = 'equipes.urls'
 
 TEMPLATES = [
     {
@@ -106,7 +106,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'cdpimport.wsgi.application'
+WSGI_APPLICATION = 'equipes.wsgi.application'
 
 LOG_LEVEL = 'DEBUG' if DEBUG else 'INFO'
 
