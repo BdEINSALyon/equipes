@@ -53,9 +53,15 @@ class HomeLoginView(TemplateView):
     template_name = 'account/login.html'
 
     def get(self, request, *args, **kwargs):
-        return shortcuts.redirect(settings.LOGIN_REDIRECT_URL)
+        if request.user.is_authenticated:
+            return shortcuts.redirect(shortcuts.reverse('logged_home'))
+        else:
+            return super(HomeLoginView, self).get(request, *args, **kwargs)
 
 
 class LoggedHomeView(LoginRequiredMixin, TemplateView):
     login_url = 'home'
     template_name = 'account/logged.html'
+
+    def get(self, request, *args, **kwargs):
+        return shortcuts.redirect(shortcuts.reverse('o365:teams'))

@@ -27,21 +27,23 @@
     {% endblock style %}
 </head>
 <body>
-{% include 'navbar.html' %}
+{% block body %}
+    {% include 'navbar.html' %}
 
-<div class="container-fluid">
-    {% for message in messages %}
-        <div class="alert alert-dismissible alert-{{ message.tags }} fade in" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            {{ message }}
+    <div class="container-fluid">
+        {% for message in messages %}
+            <div class="alert alert-dismissible alert-{{ message.tags }} fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                {{ message }}
+            </div>
+        {% endfor %}
+        <div class="container" id="content">
+            {% block content %}
+            {% endblock content %}
         </div>
-    {% endfor %}
-    <div class="container" id="content">
-        {% block content %}
-        {% endblock content %}
     </div>
-</div>
+{% endblock %}
 </body>
 </html>

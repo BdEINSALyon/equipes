@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block style_head %}
+{% block style %}
     <link href="{% static 'account/login.css' %}" type="text/css" rel="stylesheet"/>
 {% endblock %}
 
@@ -10,7 +10,7 @@
 
         <div class="offset-md-4 col-md-4">
             <div class="text-center">
-                <img src="{% static 'img/bde.png' %}" class="logo-bde-big">
+                <img src="{% static 'logo-bde.png' %}" height="70" class="logo-bde-big">
             </div>
             <div class="card text-center mt-4">
                 <div class="card-header">
