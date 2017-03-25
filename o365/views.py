@@ -8,7 +8,7 @@ from o365.microsoft import Microsoft
 
 
 class TeamsView(LoginRequiredMixin, TemplateView):
-    template_name = 'import/home.html'
+    template_name = 'import/templates/o365/teams/teams.html'
     http_method_names = ['get']
 
     def get_context_data(self, **kwargs):
