@@ -1,8 +1,9 @@
 import json
 
 import requests
+from django.db import Error
 
-from account.models import OAuthToken
+from account.models import OAuthToken, OAuthService
 import unicodedata
 
 
@@ -12,20 +13,25 @@ def strip_accents(s):
 
 
 class Microsoft(object):
-    def __init__(self, user):
-        self.token = OAuthToken.objects.filter(user=user).last()
+    def __init__(self):
+
+        service = OAuthService.objects.filter(name='microsoft').first()
+        if service is None:
+            raise Error('No Microsoft app to manage AD')
+
+        self.token = service.provider.retrieve_app_token()
         if self.token is None:
             raise AttributeError('Should ba a user with O365 token')
 
     def get_cdp_group_id(self):
         r = requests.get('https://graph.microsoft.com/v1.0/groups?$filter=startswith(displayName,\'Equipe CdP\')',
-                         headers={'Authorization': 'Bearer {}'.format(self.token.auth_token)})
+                         headers={'Authorization': 'Bearer {}'.format(self.token['access_token'])})
         return r.json()['value'][0]['id']
 
     def create_user(self, first_name, last_name):
         r = requests.post('https://graph.microsoft.com/v1.0/users',
                           headers={
-                              'Authorization': 'Bearer {}'.format(self.token.auth_token),
+                              'Authorization': 'Bearer {}'.format(self.token['access_token']),
                               'Content-Type': 'application/json'
                           },
                           data=json.dumps({
@@ -46,24 +52,30 @@ class Microsoft(object):
         return result
 
     def list_teams(self):
-        r = requests.get('https://graph.microsoft.com/v1.0/groups?$filter=startswith(displayName,\'Equipe \') and securityEnabled eq true',
-                         headers={'Authorization': 'Bearer {}'.format(self.token.auth_token)})
+        r = requests.get(
+            'https://graph.microsoft.com/v1.0/groups?$filter=startswith(displayName,\'Equipe \') and securityEnabled eq true',
+            headers={'Authorization': 'Bearer {}'.format(self.token['access_token'])})
         result = r.json()
         return result['value']
 
     def get_users(self):
         r = requests.get('https://graph.microsoft.com/v1.0/users',
-                         headers={'Authorization': 'Bearer {}'.format(self.token.auth_token)})
+                         headers={'Authorization': 'Bearer {}'.format(self.token['access_token'])})
         return r.json()['value']
 
     def get_team(self, gid):
         r = requests.get('https://graph.microsoft.com/v1.0/groups/{}'.format(gid),
-                         headers={'Authorization': 'Bearer {}'.format(self.token.auth_token)})
+                         headers={'Authorization': 'Bearer {}'.format(self.token['access_token'])})
         data = r.json()
         return data
 
     def get_members_of_team(self, gid):
         r = requests.get('https://graph.microsoft.com/v1.0/groups/{}/members'.format(gid),
-                         headers={'Authorization': 'Bearer {}'.format(self.token.auth_token)})
+                         headers={'Authorization': 'Bearer {}'.format(self.token['access_token'])})
         data = r.json()
         return data['value']
+
+    def remove_member_from_team(self, member, team):
+        r = requests.delete('https://graph.microsoft.com/v1.0/groups/{}/members/{}/$ref'.format(team['id'], member['id']),
+                            headers={'Authorization': 'Bearer {}'.format(self.token['access_token'])})
+        return r.status_code < 300

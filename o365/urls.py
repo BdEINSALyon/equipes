@@ -22,5 +22,6 @@ app_name = 'o365'
 urlpatterns = [
     url(r'^teams$', views.TeamsView.as_view(), name='teams'),
     url(r'^team/(?P<gid>[-\w]+)$', views.TeamView.as_view(), name='team'),
+    url(r'^team/(?P<gid>[-\w]+)/clear$', views.ClearTeamView.as_view(), name='team_clear'),
     url(r'^register$', views.RegisterUsers.as_view(), name='register'),
 ]

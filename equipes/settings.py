@@ -194,7 +194,7 @@ STATICFILES_DIRS = (
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 MEDIA_URL = '/uploads/'
 
-LOGIN_URL = reverse_lazy('oauth_login', kwargs={'provider': 'microsoft'})
+LOGIN_URL = 'root'
 LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = 'root'
 LOGOUT_REDIRECT_URL = 'root'

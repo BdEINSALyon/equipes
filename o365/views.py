@@ -1,19 +1,21 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
+from django.urls import reverse
 from django.views.generic import TemplateView
 
 from o365.microsoft import Microsoft
+from o365.mixins import MicrosoftTeamMixin
 
 
 class TeamsView(LoginRequiredMixin, TemplateView):
-    template_name = 'import/templates/o365/teams/teams.html'
+    template_name = 'o365/teams/teams.html'
     http_method_names = ['get']
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['teams'] = Microsoft(self.request.user).list_teams()
+        data['teams'] = Microsoft().list_teams()
         return data
 
 
@@ -22,7 +24,7 @@ class RegisterUsers(LoginRequiredMixin, TemplateView):
     http_method_names = ['get', 'post']
 
     def post(self, request, *args, **kwargs):
-        m = Microsoft(self.request.user)
+        m = Microsoft()
         users = [u.split(';') for u in request.POST['data'].split('\n')]
         for user in users:
             try:
@@ -33,8 +35,8 @@ class RegisterUsers(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['cdp'] = Microsoft(self.request.user).get_cdp_group_id()
-        data['users'] = Microsoft(self.request.user).get_users()
+        data['cdp'] = Microsoft().get_cdp_group_id()
+        data['users'] = Microsoft().get_users()
         return data
 
 
@@ -43,8 +45,8 @@ class TeamView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['team'] = Microsoft(self.request.user).get_team(kwargs['gid'])
-        data['members'] = Microsoft(self.request.user).get_members_of_team(kwargs['gid'])
+        data['team'] = Microsoft().get_team(kwargs['gid'])
+        data['members'] = Microsoft().get_members_of_team(kwargs['gid'])
         for i in range(0, len(data['members'])):
             odata_type = data['members'][i]['@odata.type']
             if odata_type == '#microsoft.graph.group':
@@ -52,3 +54,16 @@ class TeamView(LoginRequiredMixin, TemplateView):
             elif odata_type == '#microsoft.graph.user':
                 data['members'][i]['type'] = 'user'
         return data
+
+
+class ClearTeamView(MicrosoftTeamMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'o365/teams/clear_team.html'
+    http_method_names = ['get', 'post']
+
+    def post(self, request, gid):
+        team = self.get_team(gid)
+        members = self.api.get_members_of_team(gid)
+        for member in members:
+            if member['@odata.type'] == '#microsoft.graph.user':
+                self.api.remove_member_from_team(member, team)
+        return redirect(reverse('o365:team', kwargs={'gid': gid}))
