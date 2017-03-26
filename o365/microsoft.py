@@ -1,4 +1,5 @@
 import json
+import random
 
 import requests
 from django.db import Error
@@ -10,6 +11,11 @@ import unicodedata
 def strip_accents(s):
     return ''.join(c for c in unicodedata.normalize('NFD', s)
                    if unicodedata.category(c) != 'Mn')
+
+
+def generate_password(length=8):
+    return ''.join(
+        random.SystemRandom().choice("ABCEFGHJKMNPRSTUVabcdefghjkmnprstuv0123456789:=?/%") for _ in range(length))
 
 
 class Microsoft(object):
@@ -29,31 +35,39 @@ class Microsoft(object):
         return r.json()['value'][0]['id']
 
     def create_user(self, first_name, last_name):
+        """
+        Create a new user into Directory
+        :type first_name: str
+        :type last_name: str
+        """
+        name = "{} {}".format(first_name.capitalize(), last_name.capitalize())
+        identifier = "{}.{}".format(strip_accents(first_name.lower()), strip_accents(last_name.lower()))
+        upn = "{}@bde-insa-lyon.fr".format(identifier)
+        password = generate_password(10)
         r = requests.post('https://graph.microsoft.com/v1.0/users',
                           headers={
                               'Authorization': 'Bearer {}'.format(self.token['access_token']),
                               'Content-Type': 'application/json'
                           },
                           data=json.dumps({
-                              'accountEnabled': False,
-                              'displayName': "{} {}".format(first_name, last_name),
-                              'userPrincipalName': strip_accents(
-                                  "{}.{}@bde-insa-lyon.fr".format(first_name, last_name)).lower(),
-                              'mailNickname': strip_accents(
-                                  "{}.{}".format(first_name, last_name)).lower(),
+                              'accountEnabled': True,
+                              'displayName': name,
+                              'userPrincipalName': upn,
+                              'mailNickname': identifier,
                               'givenName': first_name,
                               'surname': last_name,
                               "passwordProfile": {
                                   "forceChangePasswordNextSignIn": True,
-                                  "password": "cdp2017" + first_name
+                                  "password": password
                               }
                           }))
         result = r.json()
-        return result
+        return result, password
 
     def list_teams(self):
         r = requests.get(
-            'https://graph.microsoft.com/v1.0/groups?$filter=startswith(displayName,\'Equipe \') and securityEnabled eq true',
+            'https://graph.microsoft.com/v1.0/groups?$filter=' +
+            'startswith(displayName,\'Equipe \') and securityEnabled eq true',
             headers={'Authorization': 'Bearer {}'.format(self.token['access_token'])})
         result = r.json()
         return result['value']
@@ -76,6 +90,7 @@ class Microsoft(object):
         return data['value']
 
     def remove_member_from_team(self, member, team):
-        r = requests.delete('https://graph.microsoft.com/v1.0/groups/{}/members/{}/$ref'.format(team['id'], member['id']),
-                            headers={'Authorization': 'Bearer {}'.format(self.token['access_token'])})
+        r = requests.delete(
+            'https://graph.microsoft.com/v1.0/groups/{}/members/{}/$ref'.format(team['id'], member['id']),
+            headers={'Authorization': 'Bearer {}'.format(self.token['access_token'])})
         return r.status_code < 300

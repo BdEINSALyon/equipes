@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.urls import reverse
+from django.views import View
 from django.views.generic import TemplateView
 
 from o365.microsoft import Microsoft
@@ -19,11 +20,11 @@ class TeamsView(LoginRequiredMixin, TemplateView):
         return data
 
 
-class RegisterUsers(LoginRequiredMixin, TemplateView):
+class RegisterMembersTeamView(MicrosoftTeamMixin, LoginRequiredMixin, View):
     template_name = 'import/register_user.html'
-    http_method_names = ['get', 'post']
+    http_method_names = ['post']
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, gid):
         m = Microsoft()
         users = [u.split(';') for u in request.POST['data'].split('\n')]
         for user in users:
@@ -31,13 +32,7 @@ class RegisterUsers(LoginRequiredMixin, TemplateView):
                 m.create_user(user[0], user[1])
             except IndexError:
                 pass
-        return self.get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        data['cdp'] = Microsoft().get_cdp_group_id()
-        data['users'] = Microsoft().get_users()
-        return data
+        return redirect(reverse('o365:team', args=gid))
 
 
 class TeamView(LoginRequiredMixin, TemplateView):
@@ -60,7 +55,7 @@ class ClearTeamView(MicrosoftTeamMixin, LoginRequiredMixin, TemplateView):
     template_name = 'o365/teams/clear_team.html'
     http_method_names = ['get', 'post']
 
-    def post(self, request, gid):
+    def post(self, _, gid):
         team = self.get_team(gid)
         members = self.api.get_members_of_team(gid)
         for member in members:
